@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar } from './Navbar';
+import Navbar from './Navbar';
 import { useAuth } from '../contexts/AuthContext';
 
 // Function to format time to 12-hour clock with AM/PM

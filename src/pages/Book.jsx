@@ -7,7 +7,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs from 'dayjs';
-import { Navbar } from './Navbar';
+import Navbar from './Navbar';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';

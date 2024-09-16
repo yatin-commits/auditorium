@@ -1,4 +1,4 @@
-'use client'
+
 
 import React from 'react'
 import { Menu, X } from 'lucide-react'
@@ -15,7 +15,7 @@ const menuItems = [
   { name: 'My Bookings', href: '/past' },
 ];
 
-export function Navbar() {
+export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const { currentUser, loading, setLoading, email, auth } = useAuth();
   const navigate = useNavigate();

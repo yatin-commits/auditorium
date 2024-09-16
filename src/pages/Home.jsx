@@ -1,5 +1,4 @@
-
-import { Navbar } from './Navbar';
+import Navbar from './Navbar'
 import './home.css'
 import HomeCard from '../components/HomeCard'
 import { useAuth } from '../contexts/AuthContext'

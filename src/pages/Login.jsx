@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast'; // Import react-hot-toast
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Navbar } from './Navbar';
+import Navbar from './Navbar';
 // import 'react-hot-toast/dist/index.css'; // Import react-hot-toast CSS (if needed for your setup)
 
 export function Login() {

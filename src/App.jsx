@@ -2,9 +2,9 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import AuthProvider from './contexts/AuthContext'; // Correct path
 import Signup from './pages/auth';
-import Dashboard from './pages/Dashboard';
+// import Dashboard from './pages/Dashboard';
 // import ProtectedRoute from './pages/ProtectedRoute';
-import UserDetails from './pages/UserDetails';
+// import UserDetails from './pages/UserDetails';
 import Home from './pages/Home';
 import Book from './pages/Book';
 import Past from './pages/Past';

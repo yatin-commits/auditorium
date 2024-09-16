@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // Assuming you have an AuthContext for Firebase
 import { Toaster, toast } from 'react-hot-toast';
 import axios from 'axios';
-import { Navbar } from './Navbar';
+import Navbar from './Navbar';
 
 export function CreateAcc() {
   const [email, setEmail] = useState('');
@@ -12,7 +12,7 @@ export function CreateAcc() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup } = useAuth(); // Assuming signup method is provided by AuthContext
+  const { signup } = useAuth(); 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -24,7 +24,7 @@ export function CreateAcc() {
 
     setLoading(true);
     try {
-      await signup(email, password, displayName); // You can add display name to user profile later
+      await signup(email, password, displayName); 
       
       await axios.post('http://localhost:4000/addUser', {
         email: email,
@@ -35,7 +35,7 @@ export function CreateAcc() {
       setTimeout(() => {
         navigate('/');
       }, 3000);
-       // Redirect to login or home page after signup
+       
     } catch (error) {
       console.error('Error signing up:', error);
       toast.error('Failed to create account. Try again!');
