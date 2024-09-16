@@ -11,7 +11,7 @@ import Past from './pages/Past';
 import { CreateAcc } from './pages/createAcc';
 import { Login } from './pages/Login';
 import AdminPanel from './pages/AdminPanel';
-import PrivateRoute from './pages/ProtectedRoute';
+// import PrivateRoute from './pages/ProtectedRoute';
 import ProtectedRoute from './pages/ProtectedRoute';
 import { AdminRoute } from './pages/AdminRoute';
 import NotFound from './pages/NotFound';
