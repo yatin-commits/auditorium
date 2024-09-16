@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
+// const dotenv= require('dotenv');
 dotenv.config()
 const app = express();
 const port = 4000;
@@ -223,3 +224,5 @@ app.get('/getusername', (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
+
+// module.exports=app;
