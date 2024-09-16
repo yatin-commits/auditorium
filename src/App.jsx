@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Book from './pages/Book';
 import Past from './pages/Past';
-import CreateAcc from './pages/CreateAcc';
+// import CreateAcc from './pages/CreateAcc';
+// import Createacc from './pages/CreateAcc';
+import CreateAcc from './pages/createAcc';
 import Login from './pages/Login'
 import AdminPanel from './pages/AdminPanel';
 // import PrivateRoute from './pages/ProtectedRoute';
