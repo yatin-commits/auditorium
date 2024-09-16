@@ -8,8 +8,8 @@ import Signup from './pages/auth';
 import Home from './pages/Home';
 import Book from './pages/Book';
 import Past from './pages/Past';
-import { CreateAcc } from './pages/createAcc';
-import { Login } from './pages/Login';
+import CreateAcc from './pages/createAcc';
+import Login from './pages/Login'
 import AdminPanel from './pages/AdminPanel';
 // import PrivateRoute from './pages/ProtectedRoute';
 import ProtectedRoute from './pages/ProtectedRoute';

@@ -9,7 +9,7 @@ import axios from 'axios';
 import Navbar from './Navbar';
 // import 'react-hot-toast/dist/index.css'; // Import react-hot-toast CSS (if needed for your setup)
 
-export function Login() {
+export default function Login() {
   // const [email, setEmail] = useState('');
   // const [password, setPassword] = useState('');
   const { email, setEmail, password, setPassword, login } = useAuth();

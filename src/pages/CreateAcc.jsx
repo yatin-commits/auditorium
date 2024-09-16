@@ -6,7 +6,7 @@ import { Toaster, toast } from 'react-hot-toast';
 import axios from 'axios';
 import Navbar from './Navbar';
 
-export function CreateAcc() {
+export default function CreateAcc() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
