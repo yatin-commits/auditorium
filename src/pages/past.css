@@ -1,0 +1,24 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.tablee 
+{
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    /* width: fit-content; */
+}
+
+@media only screen and (max-width: 600px) {
+    .noSee {
+        display: none;
+        width: 100px;
+        overflow: hidden;
+
+      /* background-color: lightblue; */
+    }
+    .tablee{
+        padding: 20px;
+    }
+  }

@@ -1,0 +1,10 @@
+
+.showBookings
+{
+    flex-wrap: wrap;
+    padding: 20px;
+}
+
+.showBookings p{
+    padding: 10px;
+}
