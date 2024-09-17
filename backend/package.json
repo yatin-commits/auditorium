@@ -8,8 +8,6 @@
     "start": "node server.js",
     "dev": "nodemon index.js"
   },
-
-  
   "author": "",
   "license": "ISC",
   "description": "",
@@ -20,6 +18,7 @@
     "ejs": "^3.1.10",
     "express": "^4.21.0",
     "mysql2": "^3.11.3",
+    "nodemailer": "^6.9.15",
     "nodemon": "^3.1.4"
   }
 }
