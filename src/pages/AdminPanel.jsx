@@ -9,8 +9,7 @@ const formatTime = (timeStr) => {
   const minutes = date.getMinutes();
   const ampm = hours >= 12 ? 'PM' : 'AM';
 
-  hours = hours % 12;
-  hours = hours ? hours : 12;
+  hours = hours % 12 || 12;
   const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
 
   return `${hours}:${formattedMinutes} ${ampm}`;
@@ -27,6 +26,9 @@ function AdminPanel() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [rejectionReason, setRejectionReason] = useState(''); // State for rejection reason
+  const [selectedRequestId, setSelectedRequestId] = useState(null); // Track the request being rejected
+  const [showModal, setShowModal] = useState(false); // State to control modal visibility
 
   // Fetch all booking requests
   useEffect(() => {
@@ -50,36 +52,59 @@ function AdminPanel() {
 
   // Handle approval or rejection of requests
   const handleAction = async (id, status) => {
+    const reasonToSend = status === 'canceled' && rejectionReason ? rejectionReason : null;
+
     try {
       const response = await fetch(`http://localhost:4000/api/update-status`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id, status }), // Changed from action to status
+        body: JSON.stringify({
+          id,
+          status,
+          reason: reasonToSend, // send rejection reason as null if empty
+        }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to update request');
       }
-  
+
       // Update the requests state
       setRequests((prevRequests) =>
         prevRequests.map((request) =>
-          request.id === id ? { ...request, status } : request
+          request.id === id ? { ...request, status, rejection_reason: reasonToSend } : request
         )
       );
+
+      setRejectionReason(''); // Reset rejection reason
+      setSelectedRequestId(null); // Clear selected request
+      setShowModal(false); // Close modal
+
     } catch (err) {
       console.error(err);
       alert('Failed to update the request');
     }
   };
 
+  // Function to open the rejection reason modal
+  const openRejectionModal = (id) => {
+    setSelectedRequestId(id);
+    setRejectionReason(''); // Reset the rejection reason field
+    setShowModal(true); // Show the modal
+  };
+
+  // Function to handle modal close
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
   return (
     <>
       <Navbar />
       <div>
-        <h1 className="font-[poppins] text-2xl p-4">Welcome Sir! 🫡</h1>
+        <h1 className="font-[poppins] text-2xl p-4">Welcome, {userName}! 🫡</h1>
         <h1 className="font-[poppins] px-4 text-4xl font-bold text-justify">Booking Requests</h1>
 
         {loading ? (
@@ -107,8 +132,8 @@ function AdminPanel() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 bg-white">
-                        {requests.map((request, index) => (
-                          <tr key={index}>
+                        {requests.map((request) => (
+                          <tr key={request.id}>
                             <td className="whitespace-nowrap px-4 py-4">{request.event_title}</td>
                             <td className="whitespace-nowrap px-4 py-4">{request.event_description}</td>
                             <td className="whitespace-nowrap px-4 py-4">{cleanDate(request.date)}</td>
@@ -136,7 +161,7 @@ function AdminPanel() {
                                 Approve
                               </button>
                               <button
-                                onClick={() => handleAction(request.id, 'canceled')}
+                                onClick={() => openRejectionModal(request.id)}
                                 className="bg-red-500 text-white px-4 py-2 rounded"
                                 disabled={request.status === 'canceled'}
                               >
@@ -154,6 +179,36 @@ function AdminPanel() {
           </section>
         )}
       </div>
+
+      {/* Modal for rejection reason */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
+            <h2 className="text-xl font-bold mb-4">Rejection Reason</h2>
+            <textarea
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+              placeholder="Provide a reason for rejection"
+              rows="4"
+              className="w-full border p-2 rounded-md"
+            />
+            <div className="mt-4">
+              <button
+                onClick={() => handleAction(selectedRequestId, 'canceled')}
+                className="bg-red-500 text-white px-4 py-2 rounded mr-2"
+              >
+                Reject
+              </button>
+              <button
+                onClick={handleModalClose}
+                className="bg-gray-500 text-white px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

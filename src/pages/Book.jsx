@@ -12,6 +12,9 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import './book.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
+
 function Book() {
   const { email, userName, setUserName } = useAuth();
   const [value, setValue] = useState(dayjs().startOf('hour'));
@@ -101,30 +104,45 @@ function Book() {
         <div className="flex p-4 justify-evenly calander-container">
           <Calendar className="font-[poppins] rounded-lg font-bolder" onChange={setDate} value={date} />
           <div className="px-4 text-justify showBookings">
-            <h2 className="text-center font-[poppins] text-xl">Already Booked Slots For {date.toDateString()}</h2>
-            <p className="text-slate-500">View existing reservations for the selected date.</p>
-            {approvedEvents.length > 0 ? (
-              <ul>
-                {approvedEvents.map((event, index) => (
-                  <li key={index} className="border-b-1 m-2 border-2 border-black p-4 rounded-md flex justify-between">
-                    <div>
-                      <h1 className="font-bold">{event.event_title}</h1>
-                      <h1>{event.start_time} - {event.end_time}</h1>
-                    </div>
-                    <div className="flex flex-col items-center">{event.teacher_name} <br />
-                      <span className="border-2 p-1 font-[poppins] bg-green-400 rounded-md">Approved</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-center">No Booked events for this date.</p>
-            )}
+  <h2 className="text-center font-[poppins] text-2xl font-semibold mb-6">
+    Slots For {date.toDateString()}
+  </h2>
+  {approvedEvents.length > 0 ? (
+    <ul className="grid gap-6">
+      {approvedEvents.map((event, index) => (
+        <li
+          key={index}
+          className="border border-gray-200 rounded-lg shadow-lg p-5 bg-white hover:shadow-2xl transition-shadow duration-300"
+        >
+          <div className="flex flex-col mb-4">
+            <h1 className="text-xl font-bold text-gray-800">{event.event_title}</h1>
+            <p className="text-sm text-gray-600 mt-1">
+              {event.start_time} - {event.end_time}
+            </p>
           </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-700 font-medium">{event.teacher_name}</span>
+            <span className="px-3 py-1 text-sm font-semibold text-green-800 bg-green-100 rounded-full">
+              Approved
+            </span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p className="text-center font-[poppins] text-xl mt-4 text-gray-600">
+      No Booked events for this date 🥳.
+    </p>
+  )}
+</div>
+
         </div>
         <div className="flex justify-center p-3 space-x-5">
           <div className="flex flex-col justify-center items-center w-full h-full ">
-            <h1 className="text-3xl font-[poppins] m-3" >Book New Event!</h1>
+          <h1 className="text-3xl font-[poppins] m-3">
+  Book New Event <FontAwesomeIcon icon={faArrowDown} />
+</h1>
+
             <div className="flex flex-row booknew">
               <div className="mt-4 flex flex-col w-96">
                 <div className="p-5">

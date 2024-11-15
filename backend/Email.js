@@ -3,17 +3,19 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const emailUser=import.meta.env.VITE_EMAIL_USER;
+const emailPass=import.meta.env.VITE_EMAIL_PASS;
 const transporter = nodemailer.createTransport({
   service: 'gmail', 
   auth: {
-    user: import.meta.env.EMAIL_USER,   // Use process.env to access environment variables
-    pass: import.meta.env.EMAIL_PASSWORD
+    user: emailUser,   // Use process.env to access environment variables
+    pass: emailPass
   }
 });
 
 async function sendMail(to, subject, html) {
   const mailOptions = {
-    from: import.meta.env.EMAIL_USER,
+    from: emailUser,
     to,
     subject,
     html

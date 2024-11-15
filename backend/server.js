@@ -2,19 +2,30 @@ import express from 'express';
 import cors from 'cors';
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
-// const dotenv= require('dotenv');
 dotenv.config()
 const app = express();
 const port = 4000;
 
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+  next();
+});
 app.use(cors());
 app.use(express.json());
+
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
+  next();
+});
 
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '1234', 
-  database: 'auditorium_booking' 
+  database: 'auditorium_booking'  
 });
 
 db.connect((err) => {
@@ -25,29 +36,8 @@ db.connect((err) => {
   console.log('Connected to the MySQL database.');
 });
 
-// API Endpoint to update profile
-app.post('/dashboard/profile', (req, res) => {
-  const { email, name } = req.body;
 
-  if (!email || !name) {
-    return res.status(400).json({ message: 'Email and name are required' });
-  }
 
-  const query = 'UPDATE users SET name = ? WHERE email = ?';
-
-  db.query(query, [name, email], (err, result) => {
-    if (err) {
-      console.error('Error updating user profile:', err);
-      return res.status(500).json({ message: 'Database error' });
-    }
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    res.json({ message: 'Profile updated successfully' });
-  });
-});
 
 app.get('/api/all-requests', (req, res) => {
   const query = 'SELECT * FROM events'; // Adjust your table name as needed
@@ -62,18 +52,23 @@ app.get('/api/all-requests', (req, res) => {
 
 
 app.post('/api/update-status', (req, res) => {
-  const { id, status } = req.body; 
-  console.log(id,status);
-  // 'id' is the booking request ID and 'status' can be 'approved' or 'rejected'
-  
-  const query = 'UPDATE events SET status = ? WHERE id = ?';
-  db.query(query, [status, id], (err, results) => {
+  const { id, status, reason } = req.body; // Added 'reason'
+  // console.log(id, status, reason);
+
+  // If rejecting, save the rejection reason; otherwise, set reason to null
+  const query = `UPDATE events SET status = ?, rejection_reason = ? WHERE id = ?`;
+  const rejectionReason = status === 'canceled' ? reason : null;
+// console.log("Rejection Reason:", rejectionReason);
+
+
+  db.query(query, [status, rejectionReason, id], (err) => {
     if (err) {
       return res.status(500).json({ message: 'Error updating request status', error: err });
     }
     res.json({ message: 'Status updated successfully' });
   });
 });
+
 
 
 
@@ -85,17 +80,19 @@ app.get('/api/past-bookings', (req, res) => {
   }
 
   const query = `
-    SELECT 
-      event_title,
-      event_description,
-      date,
-      start_time,
-      end_time,
-      status
-    FROM events
-    WHERE email = ? 
-    ORDER BY date DESC;  
-  `;
+  SELECT 
+    event_title,
+    event_description,
+    date,
+    start_time,
+    end_time,
+    status,
+    rejection_reason
+  FROM events
+  WHERE email = ? 
+  ORDER BY date DESC;
+`;
+
 
   db.query(query, [email], (err, results) => {
     if (err) {
@@ -118,7 +115,7 @@ app.post('/dashboard/', (req, res) => {
 
   const query = 'INSERT INTO users (email, name, role) VALUES (?, ?, ?)';
 
-  db.query(query, [email, name, role], (err, result) => {
+  db.query(query, [email, name, role], (err) => {
     if (err) {
       console.error('Error creating user profile:', err);
       return res.status(500).json({ message: 'Database error' });
@@ -180,18 +177,37 @@ app.post('/api/book-event', (req, res) => {
 });
 
 app.post('/addUser', (req, res) => {
-  const { name,email } = req.body;
-  // console.log(req.body);
-  const query = 'INSERT INTO users (name,email) VALUES (?, ?)';
-  db.query(query, [name,email], (err, result) => {
+  const { name, email } = req.body;
+  
+  if (!email.endsWith('@bvicam.in')&&email!="bvicamidforproject@gmail.com") {
+    return res.status(400).send('Only @bvicam.in emails are allowed.');
+  }
+  // Check if the user with the same email already exists
+  const checkUserQuery = 'SELECT * FROM users WHERE email = ?';
+  db.query(checkUserQuery, [email], (err, results) => {
     if (err) {
-      console.error('Error inserting user data:', err);
-      return res.status(500).send('Error saving user data');
+      console.error('Error checking user data:', err);
+      return res.status(500).send('Error checking user data');
     }
 
-    res.status(200).send('User data saved successfully');
+    // If user already exists, skip insertion
+    if (results.length > 0) {
+      return res.status(200).send('User already exists, skipping insertion');
+    }
+
+    // If user does not exist, insert the new user
+    const insertUserQuery = 'INSERT INTO users (name, email) VALUES (?, ?)';
+    db.query(insertUserQuery, [name, email], (err) => {
+      if (err) {
+        console.error('Error inserting user data:', err);
+        return res.status(500).send('Error saving user data');
+      }
+
+      res.status(200).send('User data saved successfully');
+    });
   });
 });
+
 
 app.get('/getusername', (req, res) => {
   const { email } = req.query;
@@ -224,5 +240,3 @@ app.get('/getusername', (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
-
-// module.exports=app;

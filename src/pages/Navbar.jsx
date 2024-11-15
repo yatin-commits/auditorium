@@ -81,7 +81,7 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
-            {currentUser?.email === 'superadmin@bvicam.in' && (
+            {currentUser?.email === 'bvicamidforproject@gmail.com' && (
                 <li><Link to="/admin" className="hover:underline font-semibold text-sm p-2 rounded-md bg-green-600 text-white">Manage Requests</Link></li>
               )}
           </ul>
@@ -101,7 +101,7 @@ export default function Navbar() {
           ) : (
             <Link to="/login" className="bg-green-700 text-white px-4 py-2 rounded-md">Login</Link>
           )}
-          <FontAwesomeIcon icon={faBug} title="Report A Bug" className='cursor-pointer px-2' />
+          {/* <FontAwesomeIcon icon={faBug} title="Report A Bug" className='cursor-pointer px-2' /> */}
 
         </div>
         <div className="lg:hidden">
@@ -155,7 +155,7 @@ export default function Navbar() {
                         </span>
                       </Link>
                     ))}
-                    {email === 'superadmin@bvicam.in' && (
+                    {email === 'bvicamidforproject@gmail.com' && (
                 <li className="list-none"><Link to="/admin" className="hover:underline font-semibold text-sm p-2 rounded-md bg-green-600 text-white">Manage Requests</Link></li>
               )}
                   </nav>

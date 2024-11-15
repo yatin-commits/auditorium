@@ -2,21 +2,28 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import { useAuth } from '../contexts/AuthContext';
 import './past.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+
 
 function Past() {
-  const { email, userName } = useAuth();
+  const { email } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
+  const [showModal, setShowModal] = useState(false);
+  const [selectedReason, setSelectedReason] = useState('');
+    
   useEffect(() => {
     const fetchPastBookings = async () => {
+      if (!email) return; // Early exit if no email is present
+
       try {
         const response = await fetch(`http://localhost:4000/api/past-bookings?email=${email}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch past bookings');
-        }
+        if (!response.ok) throw new Error('Failed to fetch past bookings');
         const data = await response.json();
+        console.log(data[0].rejection_reason)
         setBookings(data);
       } catch (err) {
         setError(err.message);
@@ -25,37 +32,38 @@ function Past() {
       }
     };
 
-    if (email) {
-      fetchPastBookings();
-    }
+    fetchPastBookings();
   }, [email]);
 
-  // Function to format time to 12-hour clock with AM/PM
   const formatTime = (timeStr) => {
     const date = new Date(`1970-01-01T${timeStr}Z`);
     let hours = date.getHours();
     const minutes = date.getMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
-
-    // Convert 24-hour format to 12-hour format
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
+    hours = hours % 12 || 12;
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-
     return `${hours}:${formattedMinutes} ${ampm}`;
   };
 
-  // Function to clean up date string
   const cleanDate = (dateStr) => {
     const date = new Date(dateStr);
-    return date.toISOString().split('T')[0]; // Extract the date part (YYYY-MM-DD)
+    return date.toISOString().split('T')[0];
+  };
+
+  const openModal = (reason) => {
+    setSelectedReason(reason);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedReason('');
   };
 
   return (
     <>
       <Navbar />
       <div>
-        <h1 className="font-[poppins] text-2xl p-4">Welcome {userName || 'guest'}😉</h1>
         <h1 className="font-[poppins] px-4 text-4xl font-bold text-justify">Past Bookings</h1>
 
         {loading ? (
@@ -63,7 +71,7 @@ function Past() {
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : bookings.length === 0 ? (
-          <p>No past bookings found.</p>
+          <p className="p-4 font-[poppins]">No past bookings found.</p>
         ) : (
           <section className="mx-auto w-full max-w-7xl px-4 py-4">
             <div className="mt-6 flex flex-col">
@@ -79,6 +87,7 @@ function Past() {
                           <th className="px-4 py-3.5 text-left text-sm font-normal text-gray-700">Date</th>
                           <th className="px-4 py-3.5 text-left text-sm font-normal text-gray-700 noSee">Start Time</th>
                           <th className="px-4 py-3.5 text-left text-sm font-normal text-gray-700 noSee">End Time</th>
+                          <th className="px-4 py-3.5 text-left text-sm font-normal text-gray-700">Reason</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 bg-white">
@@ -102,6 +111,21 @@ function Past() {
                             <td className="whitespace-nowrap px-4 py-4">{cleanDate(booking.date)}</td>
                             <td className="whitespace-nowrap px-4 py-4 noSee">{formatTime(booking.start_time)}</td>
                             <td className="whitespace-nowrap px-4 py-4 noSee">{formatTime(booking.end_time)}</td>
+                            <td className="whitespace-nowrap px-4 py-4">
+                              {booking.status === 'canceled' && booking.rejection_reason ? (
+                                <span
+                                  onClick={() => openModal(booking.rejection_reason)}
+                                  className="cursor-pointer  hover:underline"
+                                  title="Click to view reason"
+                                >
+                                  <FontAwesomeIcon icon={faCircleInfo} />
+                                  {/* {booking.rejection_reason.slice(0, 30)}
+                                  {booking.rejection_reason.length > 30 ? '...' : ''} */}
+                                </span>
+                              ) : (
+                                '-'
+                              )}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -111,6 +135,24 @@ function Past() {
               </div>
             </div>
           </section>
+        )}
+
+        {showModal && (
+         <div className="fixed inset-0 flex items-center justify-center z-50" role="dialog" aria-labelledby="modal-title">
+         <div className="bg-white p-6 rounded shadow-md w-1/3 max-h-80 overflow-y-auto">
+           <h2 id="modal-title" className="text-lg font-bold mb-4">Rejection Reason</h2>
+           <p className="whitespace-pre-wrap break-words">{selectedReason}</p>
+           <div className="mt-4 flex justify-end">
+             <button
+               onClick={closeModal}
+               className="bg-red-700 text-white px-4 py-2 rounded"
+             >
+               Close
+             </button>
+           </div>
+         </div>
+       </div>
+       
         )}
       </div>
     </>

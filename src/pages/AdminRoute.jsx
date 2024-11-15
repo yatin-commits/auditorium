@@ -6,7 +6,7 @@ export function AdminRoute({ children }) {
   const { currentUser } = useAuth();
 
   // Admin email for validation
-  const adminEmail = 'superadmin@bvicam.in';
+  const adminEmail = 'bvicamidforproject@gmail.com';
 
   if (!currentUser) {
     // If no user is logged in, redirect to login
