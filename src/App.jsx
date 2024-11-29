@@ -13,8 +13,10 @@ import ProtectedRoute from './pages/ProtectedRoute';
 import { AdminRoute } from './pages/AdminRoute';
 import NotFound from './pages/NotFound';
 import Unauthorised from './pages/Unauthorised';
+import AuthProvider from './contexts/AuthContext.jsx';
 function App() {
   return (
+      <AuthProvider>
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/newacc" element={<CreateAcc />} />
@@ -28,11 +30,12 @@ function App() {
               <AdminPanel />
             </AdminRoute>
           }
-        />
+          />
       {/* Other routes */}
       <Route path="/unauthorized" element={<Unauthorised />}/>
       <Route path="*" element={<NotFound/>} />
     </Routes>
+          </AuthProvider>
   );
 }
 

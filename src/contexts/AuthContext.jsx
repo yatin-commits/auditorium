@@ -21,7 +21,8 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true); // Start with true to show loading state initially
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userName, setUserName] = useState(''); // Initialize with empty string
+  const [userName, setUserName] = useState('');
+  const [dept,setDept] =useState("demo");
 
   // Fetch userName from backend based on the email
   const fetchUserName = async (userEmail) => {
@@ -42,6 +43,9 @@ const AuthProvider = ({ children }) => {
       await setPersistence(auth, browserLocalPersistence);
       await signInWithEmailAndPassword(auth, email, password);
       setEmail(email);
+      const department = email?.split('@')[1]?.split('.')[0]?.toUpperCase() || 'Unknown Department';
+      setDept(department);
+
 
       // Fetch username after successful login
       await fetchUserName(email);
@@ -106,7 +110,9 @@ const AuthProvider = ({ children }) => {
     loading,
     login,
     logout,
-    auth
+    auth,
+    dept,
+    setDept
   };
 
   return (

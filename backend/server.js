@@ -40,7 +40,7 @@ db.connect((err) => {
 
 
 app.get('/api/all-requests', (req, res) => {
-  const query = 'SELECT * FROM events'; // Adjust your table name as needed
+  const query = 'SELECT * FROM events ORDER BY id desc;'; // Adjust your table name as needed
 
   db.query(query, (err, results) => {
     if (err) {
@@ -52,16 +52,11 @@ app.get('/api/all-requests', (req, res) => {
 
 
 app.post('/api/update-status', (req, res) => {
-  const { id, status, reason } = req.body; // Added 'reason'
-  // console.log(id, status, reason);
-
-  // If rejecting, save the rejection reason; otherwise, set reason to null
-  const query = `UPDATE events SET status = ?, rejection_reason = ? WHERE id = ?`;
+  const { id, status, reason, approved_by } = req.body; // Added 'approved_by'
+  const query = `UPDATE events SET status = ?, rejection_reason = ?, approved_by = ? WHERE id = ?`;
   const rejectionReason = status === 'canceled' ? reason : null;
-// console.log("Rejection Reason:", rejectionReason);
 
-
-  db.query(query, [status, rejectionReason, id], (err) => {
+  db.query(query, [status, rejectionReason, approved_by, id], (err) => {
     if (err) {
       return res.status(500).json({ message: 'Error updating request status', error: err });
     }
@@ -72,7 +67,8 @@ app.post('/api/update-status', (req, res) => {
 
 
 
-app.get('/api/past-bookings', (req, res) => {
+
+app.get('/past-bookings', (req, res) => {
   const { email } = req.query;
 
   if (!email) {
@@ -87,10 +83,12 @@ app.get('/api/past-bookings', (req, res) => {
     start_time,
     end_time,
     status,
-    rejection_reason
+    rejection_reason,
+    priority,
+    department_name
   FROM events
   WHERE email = ? 
-  ORDER BY date DESC;
+  ORDER BY id desc;
 `;
 
 
@@ -103,27 +101,7 @@ app.get('/api/past-bookings', (req, res) => {
   });
 });
 
-// API Endpoint to create user profile
-app.post('/dashboard/', (req, res) => {
-  const { email } = req.body;
-  const name = 'tempname'; // Default name
-  const role = 'teacher'; // Default role
 
-  if (!email) {
-    return res.status(400).json({ message: 'Email is required' });
-  }
-
-  const query = 'INSERT INTO users (email, name, role) VALUES (?, ?, ?)';
-
-  db.query(query, [email, name, role], (err) => {
-    if (err) {
-      console.error('Error creating user profile:', err);
-      return res.status(500).json({ message: 'Database error' });
-    }
-
-    res.json({ message: 'Profile created successfully' });
-  });
-});
 
 // Endpoint to fetch approved events
 app.get('/api/approved-events', (req, res) => {
@@ -142,6 +120,10 @@ app.get('/api/approved-events', (req, res) => {
       events.end_time,
       events.date,
       events.status,
+      events.approved_by,
+      events. department_name,
+      events.booked_by,
+
       users.name AS teacher_name
     FROM events
     JOIN users ON events.email = users.email
@@ -160,29 +142,30 @@ app.get('/api/approved-events', (req, res) => {
 
 // Endpoint to book an event
 app.post('/api/book-event', (req, res) => {
-  const { email, event_title, event_description, date, start_time, end_time } = req.body;
+  const { email, event_title, event_description, date, start_time, end_time, department_name,priority,bookedby} = req.body;
 
-  if (!email || !event_title || !date || !start_time || !end_time) {
+  if (!email || !event_title || !date || !start_time || !end_time || !department_name) {
     return res.status(400).json({ error: 'All fields are required.' });
   }
 
-  const query = 'INSERT INTO events (email, event_title, event_description, date, start_time, end_time, status) VALUES (?, ?, ?, ?, ?, ?, "pending")';
-  db.query(query, [email, event_title, event_description, date, start_time, end_time], (err, results) => {
-    if (err) {
-      console.error('Error inserting new booking:', err.message);
-      return res.status(500).json({ error: 'Error booking event' });
-    }
-    res.json({ message: 'Booking request submitted successfully', bookingId: results.insertId });
-  });
+  const query = 'INSERT INTO events (email, event_title, event_description, date, start_time, end_time, status, department_name, priority, booked_by) VALUES (?, ?, ?, ?, ?, ?, "pending", ?, ?, ?)';
+db.query(query, [email, event_title, event_description, date, start_time, end_time, department_name, priority, bookedby || null], (err, results) => {
+  if (err) {
+    console.error('Error inserting new booking:', err.message);
+    return res.status(500).json({ error: 'Error booking event' });
+  }
+  res.json({ message: 'Booking request submitted successfully', bookingId: results.insertId });
 });
+});
+
 
 app.post('/addUser', (req, res) => {
   const { name, email } = req.body;
   
-  if (!email.endsWith('@bvicam.in')&&email!="bvicamidforproject@gmail.com") {
+  if (!email.endsWith('@bvicam.in') && email!="bvicamidforproject@gmail.com") {
     return res.status(400).send('Only @bvicam.in emails are allowed.');
   }
-  // Check if the user with the same email already exists
+ 
   const checkUserQuery = 'SELECT * FROM users WHERE email = ?';
   db.query(checkUserQuery, [email], (err, results) => {
     if (err) {

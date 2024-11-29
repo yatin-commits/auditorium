@@ -20,7 +20,7 @@ function Past() {
       if (!email) return; // Early exit if no email is present
 
       try {
-        const response = await fetch(`http://localhost:4000/api/past-bookings?email=${email}`);
+        const response = await fetch(`http://localhost:4000/past-bookings?email=${email}`);
         if (!response.ok) throw new Error('Failed to fetch past bookings');
         const data = await response.json();
         console.log(data[0].rejection_reason)
@@ -83,10 +83,11 @@ function Past() {
                         <tr>
                           <th className="px-4 py-3.5 text-left text-sm font-normal text-gray-700">Status</th>
                           <th className="px-4 py-3.5 text-left text-sm font-normal text-gray-700">Event Title</th>
-                          <th className="px-4 py-3.5 text-left text-sm font-normal text-gray-700 noSee">Description</th>
+                          {/* <th className="px-4 py-3.5 text-left text-sm font-normal text-gray-700 noSee">Description</th> */}
                           <th className="px-4 py-3.5 text-left text-sm font-normal text-gray-700">Date</th>
                           <th className="px-4 py-3.5 text-left text-sm font-normal text-gray-700 noSee">Start Time</th>
                           <th className="px-4 py-3.5 text-left text-sm font-normal text-gray-700 noSee">End Time</th>
+                          <th className="px-4 py-3.5 text-left text-sm font-normal text-gray-700 noSee">Priority</th>
                           <th className="px-4 py-3.5 text-left text-sm font-normal text-gray-700">Reason</th>
                         </tr>
                       </thead>
@@ -107,10 +108,11 @@ function Past() {
                               </span>
                             </td>
                             <td className="whitespace-nowrap px-4 py-4">{booking.event_title}</td>
-                            <td className="whitespace-nowrap px-4 py-4 noSee">{booking.event_description}</td>
+                            {/* <td className="whitespace-nowrap px-4 py-4 noSee">{booking.event_description}</td> */}
                             <td className="whitespace-nowrap px-4 py-4">{cleanDate(booking.date)}</td>
                             <td className="whitespace-nowrap px-4 py-4 noSee">{formatTime(booking.start_time)}</td>
                             <td className="whitespace-nowrap px-4 py-4 noSee">{formatTime(booking.end_time)}</td>
+                            <td className="whitespace-nowrap px-4 py-4 noSee">{booking.priority==1?"✅":null}</td>
                             <td className="whitespace-nowrap px-4 py-4">
                               {booking.status === 'canceled' && booking.rejection_reason ? (
                                 <span
@@ -119,12 +121,11 @@ function Past() {
                                   title="Click to view reason"
                                 >
                                   <FontAwesomeIcon icon={faCircleInfo} />
-                                  {/* {booking.rejection_reason.slice(0, 30)}
-                                  {booking.rejection_reason.length > 30 ? '...' : ''} */}
+                                 
                                 </span>
-                              ) : (
-                                '-'
-                              )}
+                              ) : null
+                                
+                              }
                             </td>
                           </tr>
                         ))}

@@ -1,24 +1,27 @@
-*{
-    margin: 0;
-    padding: 0;
-}
-.tablee 
-{
-    margin: auto;
-    display: flex;
-    justify-content: center;
-    /* width: fit-content; */
-}
-
-@media only screen and (max-width: 600px) {
-    .noSee {
-        display: none;
-        width: 100px;
-        overflow: hidden;
-
-      /* background-color: lightblue; */
+/* Styling for smaller screens */
+@media (max-width: 768px) {
+    .hidden {
+      display: none;
     }
-    .tablee{
-        padding: 20px;
+  
+    table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+  
+    .table-auto {
+      width: 100%;
+    }
+  
+    /* Adjust modal size */
+    .bg-white {
+      width: 80%;
     }
   }
+  
+  /* Optional: Add hover effects for table rows */
+  tr:hover {
+    background-color: #f7fafc;
+  }
+  

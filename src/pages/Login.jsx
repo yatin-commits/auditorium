@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { auth, googleProvider } from '../../auth/firebase'; // Ensure Firebase is initialized and Google Provider is configured
+import { auth, googleProvider } from '../../auth/firebase';
 import { signInWithPopup } from 'firebase/auth';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faGoogle } from '@fortawesome/free-solid-svg-icons';
 import Navbar from './Navbar';
 
 export default function Login() {
@@ -25,7 +22,7 @@ export default function Login() {
       const name = user.displayName; // Use the user's name from the Google account
 
       // Check if the email ends with @bvicam.in
-      if (!email.endsWith('@bvicam.in') && email!="bvicamidforproject@gmail.com") {
+      if (!email.endsWith('@bvicam.in') && email !== "bvicamidforproject@gmail.com") {
         alert('Only @bvicam.in email addresses are allowed to log in.');
         auth.signOut();  // Immediately sign out the user
         setLoading(false);
@@ -53,33 +50,38 @@ export default function Login() {
   };
 
   return (
-    <section>
+    <>
       <Navbar />
-      <div className="flex items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
-        <div className="xl:mx-auto xl:w-full xl:max-w-sm 2xl:max-w-md">
-          <h2 className="text-center text-2xl font-bold leading-tight text-black">
-            Please Login to Access
-          </h2>
-          <p className="mt-2 text-center  text-gray-600 font-[poppins] text-xl">
-            Sign in using official Bvicam Id
+    <section className="bg-gray-100 min-h-screen flex flex-col justify-center py-10 sm:py-16 lg:py-24">
+      <div className="flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className="max-w-lg w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
+          <h2 className="text-center text-3xl font-semibold text-gray-800">Please Login to Access</h2>
+          <p className="mt-2 text-center text-lg text-gray-600 font-[poppins]">
+            Sign in using your official Bvicam ID
           </p>
 
-          <div className="mt-8 space-y-5">
+          <div className="mt-6 space-y-5">
             <button
               onClick={handleGoogleSignIn}
-              className="inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80"
+              className="w-full flex items-center justify-center rounded-md bg-black px-4 py-3 text-white font-semibold hover:bg-black/80 transition ease-in-out duration-300"
               disabled={loading}
             >
-              {loading ? 'Signing you in...' : 'Sign in with Google '}
-              <ArrowRight className="ml-2" size={16} />
+              {loading ? 'Signing you in...' : 'Sign in with Google'}
+              <ArrowRight className="ml-3" size={20} />
             </button>
 
             {error && <p className="text-center text-red-500">{error}</p>}
             {success && <p className="text-center text-green-500">{success}</p>}
           </div>
+
+          <div className="mt-8 text-center text-gray-500 text-sm">
+            <p>
+              By signing in, you agree to our <a href="#" className="text-blue-500">Terms of Service</a> and <a href="#" className="text-blue-500">Privacy Policy</a>.
+            </p>
+          </div>
         </div>
       </div>
     </section>
+  </>
   );
 }
-  
